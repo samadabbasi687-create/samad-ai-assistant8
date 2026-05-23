@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Samad AI Assistant</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, sans-serif;
+}
+
+body{
+background:#0f172a;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+color:white;
+}
+
+.container{
+width:95%;
+max-width:500px;
+background:#111827;
+border-radius:20px;
+padding:20px;
+box-shadow:0 0 25px rgba(0,0,0,0.5);
+}
+
+.logo{
+text-align:center;
+font-size:30px;
+font-weight:bold;
+color:#22c55e;
+margin-bottom:5px;
+}
+
+.subtitle{
+text-align:center;
+color:#94a3b8;
+margin-bottom:20px;
+}
+
+.chat-box{
+height:350px;
+overflow-y:auto;
+background:#1e293b;
+padding:15px;
+border-radius:15px;
+margin-bottom:15px;
+}
+
+.message{
+padding:10px;
+margin:10px 0;
+border-radius:10px;
+max-width:80%;
+}
+
+.user{
+background:#2563eb;
+margin-left:auto;
+}
+
+.bot{
+background:#16a34a;
+}
+
+.controls{
+display:flex;
+gap:10px;
+}
+
+input{
+flex:1;
+padding:12px;
+border:none;
+border-radius:10px;
+outline:none;
+font-size:16px;
+}
+
+button{
+padding:12px 18px;
+border:none;
+border-radius:10px;
+background:#22c55e;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:#16a34a;
+}
+
+.footer{
+text-align:center;
+margin-top:15px;
+font-size:12px;
+color:#64748b;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logo">Samad AI Assistant</div>
+
+<div class="subtitle">
+Your Personal AI Voice Assistant
+</div>
+
+<div class="chat-box" id="chatBox"></div>
+
+<div class="controls">
+
+<input
+type="text"
+id="userInput"
+placeholder="Type message..."
+>
+
+<button onclick="sendMessage()">Send</button>
+
+<button onclick="startListening()">🎤</button>
+
+</div>
+
+<div class="footer">
+Made with ❤️ by Samad
+</div>
+
+</div>
+
+<script>
+
+const chatBox = document.getElementById("chatBox");
+
+function addMessage(text, sender){
+
+const msg = document.createElement("div");
+
+msg.classList.add("message");
+msg.classList.add(sender);
+
+msg.innerText = text;
+
+chatBox.appendChild(msg);
+
+chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function speak(text){
+
+const speech = new SpeechSynthesisUtterance();
+
+speech.text = text;
+
+speech.lang = "hi-IN";
+
+speech.rate = 1;
+
+speech.pitch = 1;
+
+const voices = window.speechSynthesis.getVoices();
+
+if(voices.length > 0){
+speech.voice = voices[1];
+}
+
+window.speechSynthesis.speak(speech);
+}
+
+function botReply(message){
+
+let reply = "";
+
+if(
+message.includes("hello") ||
+message.includes("hi")
+){
+reply = "Hello Samad, main aap ki AI assistant hoon.";
+}
+
+else if(
+message.includes("kaise ho")
+){
+reply = "Main bilkul theek hoon. Aap kaise hain?";
+}
+
+else if(
+message.includes("youtube")
+){
+reply = "YouTube khol rahi hoon.";
+
+window.open(
+"https://www.youtube.com",
+"_blank"
+);
+}
+
+else if(
+message.includes("google")
+){
+reply = "Google open kar rahi hoon.";
+
+window.open(
+"https://www.google.com",
+"_blank"
+);
+}
+
+else if(
+message.includes("song") ||
+message.includes("music")
+){
+
+let query = message
+.replace("song","")
+.replace("music","");
+
+reply = "Aap ka music search kar rahi hoon.";
+
+window.open(
+"https://www.youtube.com/results?search_query=" + query,
+"_blank"
+);
+}
+
+else if(
+message.includes("time")
+){
+
+let now = new Date();
+
+reply = "Current time hai " +
+now.toLocaleTimeString();
+}
+
+else{
+reply =
+"Mujhe samajh nahi aaya. Dobara boliye.";
+}
+
+addMessage(reply, "bot");
+
+speak(reply);
+}
+
+function sendMessage(){
+
+const input =
+document.getElementById("userInput");
+
+const message =
+input.value.trim();
+
+if(message === "") return;
+
+addMessage(message, "user");
+
+botReply(message.toLowerCase());
+
+input.value = "";
+}
+
+function startListening(){
+
+const recognition =
+new (
+window.SpeechRecognition ||
+window.webkitSpeechRecognition
+)();
+
+recognition.lang = "hi-IN";
+
+recognition.start();
+
+recognition.onresult = function(event){
+
+const text =
+event.results[0][0].transcript;
+
+addMessage(text, "user");
+
+botReply(text.toLowerCase());
+};
+}
+
+</script>
+
+</body>
+</html>
